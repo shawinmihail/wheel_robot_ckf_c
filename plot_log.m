@@ -1,16 +1,30 @@
 clc
 clear
 close all
-path = 'ckf/ckf/wheel_robot_log.csv';
+path = 'act_state_log.csv';
 
 data = csvread(path);
+
 x = data(:,1);
 y = data(:,2);
-th = data(:,3);
-x_dot = data(:,4);
-y_dot = data(:,5);
-th_dot = data(:,6);
+z = data(:,3);
 
-v = (x_dot .^ 2 + y_dot .^ 2) .^ 0.5;
+vx = data(:,4);
+vy = data(:,5);
+vz = data(:,6);
 
-plot(v)
+ax = data(:,7);
+ay = data(:,8);
+az = data(:,9);
+
+qx = data(:,10);
+qy = data(:,11);
+qz = data(:,12);
+
+wx = data(:,13);
+wy = data(:,14);
+wz = data(:,15);
+
+% v = (x_dot .^ 2 + y_dot .^ 2) .^ 0.5;
+
+plot(x,y)

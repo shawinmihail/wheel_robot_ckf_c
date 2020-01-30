@@ -1,79 +1,56 @@
 #pragma once
-#include <stdio.h>
-#include "DynMat.h"
-#include "QuatMath.h"
-#include "WheelRobotModel.h"
-#include "MeasurmentModel.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+#include "Definitions.h"
+#include "Utils.h"
+#include "WheelRobotModel.h"
+//#include "MeasurmentModel.h"
 
-void printVectN(Mat mat, int N)
-{
-    for (int i = 0; i < N; i ++)
-    {
-        printf("%.6f, ", mat(i, 0));
-    }
-    printf("\n");
-}
 
-std::string csvStrVectN(Mat mat, int N)
-{
-    std::ostringstream os;
-    for (int i = 0; i < N; i++)
-    {
-        os << mat(i, 0);
-        os << ",";
-    }
-    os << "\n";
-    std::string str(os.str());
-    return str;
-}
+// 1200 22;
 
 void main()
 {
-    //mat v(3, 1);
-    //v(0, 0) = 1.0;
-    //v(1, 0) = 0.5;
-    //v(2, 0) = 1.0;
-
-    //mat q(4, 1);
-    //q(0, 0) = 0.71;
-    //q(1, 0) = 0.71;
-    //q(2, 0) = 0.0;
-    //q(3, 0) = 0.0;
-    //
-    //mat v2 = quatrotate(q, v);
-    //printvectn(v2, 3);
+    //Vector15 v;
+    //v[14] = 33;
+    //printVect15(v);
 
     //return;
 
     // logging init
-    std::ofstream myfile;
-    myfile.open("wheel_robot_log.csv");
+    std::ofstream act_state_log;
+    act_state_log.open("act_state_log.csv");
+
+    std::ofstream mes_state_log;
+    mes_state_log.open("mes_state_log.csv");
+
+    std::ofstream est_state_log;
+    est_state_log.open("est_state_log.csv");
 
     // init
     WheelRobotModel wheelRobotModel;
-    MeasurmentModel mesModel;
-    double dt = 1e-2;
-    Mat ctrl(2, 1);
+    //MeasurmentModel mesModel;
+    float dt = 1e-2f;
+    Vector2 ctrl(0.5f, 0.1f);
 
-    // process
+    // loop
     for (int i = 0; i < 3999; i++)
     {
         // control input
-        ctrl(0, 0) = 1.0; // v
-        ctrl(1, 0) = 0.5; // u
+        ctrl[0]= 0.5f;  // v
+        ctrl[1] = 0.1f; // u
 
         // moution
-        wheelRobotModel.integrateMoutionEuler(dt, ctrl);
-        Mat state = wheelRobotModel.getState();
-        Mat fullState = wheelRobotModel.getFullState();
+        wheelRobotModel.integrateMoution(ctrl, dt);
+        Vector6 state = wheelRobotModel.getState();
+        Vector15 actState = wheelRobotModel.getFullState();
 
         // mesuarments
-        mesModel.setData(fullState);
+        //mesModel.setData(actState);
+        //Mat mesState = mesModel.getMesState();
         
         // estimation
         // TODO
@@ -81,8 +58,12 @@ void main()
         //printVectN(state, 6);
 
         // logging
-        myfile << csvStrVectN(state, 6);
+        act_state_log << csvStrVect15(actState);
+        //mes_state_log << csvStrVectN(mesState, 15);
     }
 
-    myfile.close();
+    act_state_log.close();
+    mes_state_log.close();
+    est_state_log.close();
+
 }
