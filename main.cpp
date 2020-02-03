@@ -7,16 +7,27 @@
 #include "Definitions.h"
 #include "Utils.h"
 #include "WheelRobotModel.h"
-//#include "MeasurmentModel.h"
-
-
-// 1200 22;
+#include "MeasurmentModel.h"
+#include "Ckf.h"
 
 void main()
 {
-    //Vector15 v;
-    //v[14] = 33;
-    //printVect15(v);
+    //Eigen::HouseholderQR<Eigen::Matrix<float, 3, 2>> qr;
+    //Eigen::Matrix<float, 2, 3> A;
+    //A << 1, 2, 3, 4, 5, 6;
+    //std::cout << A << std::endl << std::endl;
+
+    //Eigen::Matrix<float, 3, 2> AT = A.transpose();
+    //qr.compute(AT);
+
+    //Eigen::Matrix<float, 3, 2> R = qr.matrixQR().triangularView<Eigen::Upper>();
+    //std::cout <<  R << std::endl << std::endl;
+
+    //Eigen::Matrix<float, 2, 3> L = R.transpose();
+    //std::cout << L << std::endl << std::endl;
+    //
+    //Eigen::Matrix<float, 2, 2> Ld = L.block(0,0,2,2);
+    //std::cout << Ld << std::endl << std::endl;
 
     //return;
 
@@ -32,12 +43,13 @@ void main()
 
     // init
     WheelRobotModel wheelRobotModel;
-    //MeasurmentModel mesModel;
+    MeasurmentModel mesModel;
+    Ckf ckf;
     float dt = 1e-2f;
     Vector2 ctrl(0.5f, 0.1f);
 
     // loop
-    for (int i = 0; i < 3999; i++)
+    for (int i = 0; i < 9999; i++)
     {
         // control input
         ctrl[0]= 0.5f;  // v
@@ -49,17 +61,23 @@ void main()
         Vector15 actState = wheelRobotModel.getFullState();
 
         // mesuarments
-        //mesModel.setData(actState);
-        //Mat mesState = mesModel.getMesState();
+        mesModel.setData(actState);
+        Vector15 mesState = mesModel.getMesState(); // r v a qv w
         
         // estimation
-        // TODO
+        ckf.updateImu(/*a*/mesState.segment(6, 3), /*w*/mesState.segment(6, 3), dt);
 
-        //printVectN(state, 6);
+        if (i % 10 == 9)
+        {
+            ckf.updateGps(/*rv*/mesState.segment(0, 6));
+        }
+        Vector9 estState = ckf.getEstState();
+        //std::cout << estState.transpose() << std::endl << std::endl;
 
         // logging
         act_state_log << csvStrVect15(actState);
-        //mes_state_log << csvStrVectN(mesState, 15);
+        mes_state_log << csvStrVect15(mesState);
+        est_state_log << csvStrVect9(estState);
     }
 
     act_state_log.close();

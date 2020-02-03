@@ -44,7 +44,7 @@ void WheelRobotModel::integrateMoution(const Vector2& ctrl, float dt)
 	processCtrlInput(ctrl, dt);
 	updateState(dt);
 	updateStateDot(dt);
-	printVect6(_stateDot);
+	//printVect6(_stateDot);
 	updateFullState();
 }
 

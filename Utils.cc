@@ -41,6 +41,19 @@ std::string csvStrVect15(const Vector15& vect)
 	return str;
 }
 
+std::string csvStrVect9(const Vector9& vect)
+{
+	std::ostringstream os;
+	for (int i = 0; i < 9; i++)
+	{
+		os << vect[i];
+		os << ",";
+	}
+	os << "\n";
+	std::string str(os.str());
+	return str;
+}
+
 Vector4 quatFromEul(const Vector3& eul)
 {
 	 float roll = eul[0];
