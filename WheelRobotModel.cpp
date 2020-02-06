@@ -30,13 +30,14 @@ void WheelRobotModel::updateFullState()
 	// qv
 	Vector3 eul(0.f, 0.f, _state(2, 0));  // eul = [0;0;th];
 	Vector4 q = quatFromEul(eul);
-	_fullState(9, 0) =  q[1];  // qx
-	_fullState(10, 0) = q[2];  // qy
-	_fullState(11, 0) = q[3];  // qz
+	Vector3 qv = quatToQuatVec(q);
+	_fullState(9, 0) =  qv[0];  // qx
+	_fullState(10, 0) = qv[1];  // qy
+	_fullState(11, 0) = qv[2];  // qz
 	// w = [0;0;th_dot]
-	_fullState[12] = 0.0f;          // wx
-	_fullState[13] = 0.0f;          // wy
-	_fullState[14] = _stateDot[5]; // wz
+	_fullState[12] = 0.0f;         // wx
+	_fullState[13] = 0.0f;         // wy
+	_fullState[14] = _stateDot[2]; // wz
 }
 
 void WheelRobotModel::integrateMoution(const Vector2& ctrl, float dt)
@@ -68,7 +69,7 @@ void WheelRobotModel::updateStateDot(float dt)
 {
 	_stateDot[0] = _ctrl[0] * cos(_state[2]); // x_dot = v cos (th)
 	_stateDot[1] = _ctrl[0] * sin(_state[2]); // y_dot = v sin (th)
-	_stateDot[2] = _ctrl[0] * _ctrl[1];           // th_dot = v u
+	_stateDot[2] = _ctrl[0] * _ctrl[1];       // th_dot = v u
 
 	// numerical
 	_stateDot[3] = (_stateDot[0] - _stateDotLast[0]) / dt; // (xdot_k - xdot_k-1) / dt

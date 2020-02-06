@@ -5,7 +5,7 @@ _mesState(Vector15::Zero()),
 
 _generator(200),
 _imuAccDist(0.0, 0.05f),
-_imuRotVelDist(0.0f, 0.05f),
+_imuRotVelDist(0.0f, 0.005f),
 _gpsPosDist(0.0f, 0.5f),
 _gpsVelDist(0.0f, 0.05f)
 {

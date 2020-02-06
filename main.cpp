@@ -10,26 +10,36 @@
 #include "MeasurmentModel.h"
 #include "Ckf.h"
 
+#include <Eigen/Dense>
+
 void main()
 {
-    //Eigen::HouseholderQR<Eigen::Matrix<float, 3, 2>> qr;
-    //Eigen::Matrix<float, 2, 3> A;
-    //A << 1, 2, 3, 4, 5, 6;
-    //std::cout << A << std::endl << std::endl;
+    /*Vector4 q1(1, 0, 0, 100);
+    Vector4 q2(-5, 0, 0, 100);
+    q1 = q1 / q1.norm();
+    q2 = q2 / q2.norm();
+    std::cout << q1 << "\n\n";
+    std::cout << q2 << "\n\n";
+    Eigen::Matrix<float, 4, 2> Q;
+    Q << q1, q2;
+    Eigen::Matrix<float, 4, 4> QQT = Q * Q.transpose();
+    Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 4, 4>> solver(QQT);
+    Vector4 eigenvalues = solver.eigenvalues();
+    
+    int k = 0;
+    for (int i = 1; i < 4; i++)
+    {
+        if (eigenvalues[i] > eigenvalues[k])
+        {
+            k = i;
+        }
+    }
+    Vector4 qAvg = solver.eigenvectors().col(k);
 
-    //Eigen::Matrix<float, 3, 2> AT = A.transpose();
-    //qr.compute(AT);
+    std::cout << qAvg << "\n\n";
+    std::cout << qAvg.norm() << "\n\n";
 
-    //Eigen::Matrix<float, 3, 2> R = qr.matrixQR().triangularView<Eigen::Upper>();
-    //std::cout <<  R << std::endl << std::endl;
-
-    //Eigen::Matrix<float, 2, 3> L = R.transpose();
-    //std::cout << L << std::endl << std::endl;
-    //
-    //Eigen::Matrix<float, 2, 2> Ld = L.block(0,0,2,2);
-    //std::cout << Ld << std::endl << std::endl;
-
-    //return;
+    return;*/
 
     // logging init
     std::ofstream act_state_log;
@@ -49,11 +59,11 @@ void main()
     Vector2 ctrl(0.5f, 0.1f);
 
     // loop
-    for (int i = 0; i < 9999; i++)
+    for (int i = 0; i < 2000; i++)
     {
         // control input
-        ctrl[0]= 0.5f;  // v
-        ctrl[1] = 0.1f; // u
+        ctrl[0]=  0.90f; // v
+        ctrl[1] = 0.25f; // u
 
         // moution
         wheelRobotModel.integrateMoution(ctrl, dt);
@@ -64,10 +74,10 @@ void main()
         mesModel.setData(actState);
         Vector15 mesState = mesModel.getMesState(); // r v a qv w
         
-        // estimation
-        ckf.updateImu(/*a*/mesState.segment(6, 3), /*w*/mesState.segment(6, 3), dt);
+        // estimation 
+        ckf.updateImu(/*a*/mesState.segment(6, 3), /*w*/mesState.segment(12, 3), dt);
 
-        if (i % 10 == 9)
+        if (i % 10 == 1)
         {
             ckf.updateGps(/*rv*/mesState.segment(0, 6));
         }
@@ -78,10 +88,11 @@ void main()
         act_state_log << csvStrVect15(actState);
         mes_state_log << csvStrVect15(mesState);
         est_state_log << csvStrVect9(estState);
+
+        std::cout << i << std::endl;
     }
 
     act_state_log.close();
     mes_state_log.close();
     est_state_log.close();
-
 }

@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include <math.h>
 
+const float UTILS_EPS = 1e-6f;
+
 void printVect3(const Vector3& vect)
 {
 	for (int i = 0; i < 3; i++)
@@ -82,19 +84,22 @@ Vector3 quatToQuatVec(const Vector4& q) // assume quat scalar part quat[0] > 0;
 	if (q[0] < 0.0f)
 	{
 		float sinHalfAlpha = qv.norm();
-		float eps = 1e-8f;
-		if (sinHalfAlpha < eps) {
+		if (sinHalfAlpha < UTILS_EPS)
+		{
 			qv = Vector3(0.0f, 0.0f, 0.0f);
 			return qv;
 		};
-		qv = qv /sinHalfAlpha; // pin
+		if (sinHalfAlpha > 1.0f)
+		{
+			sinHalfAlpha = 1.0f - UTILS_EPS; // garanteed for asin exists
+		}
+		qv = qv / sinHalfAlpha; // pin
 		float alpha = 2.0f * asin(sinHalfAlpha);
 		float pi = 3.1415f; // use WGS4 PI here;
-		float alphaNew = -2.0f * pi + alpha; // rotate to another dir
-		qv = qv * -1.0f; // pin = - pin
+		float alphaNew = 2.0f * pi - alpha; // rotate to another dir
 
 		float sinHalfNewAlpha = sin(alphaNew / 2.0f);
-		qv = qv * sinHalfNewAlpha;
+		qv = -qv * sinHalfNewAlpha;
 	}
 	return qv;
 }
@@ -104,11 +109,14 @@ Vector4 quatVecToQuat(const Vector3& qv) // assume quat scalar part quat[0] > 0;
 	float q0Square = 1 - qv[0] * qv[0] - qv[1] * qv[1] - qv[2] * qv[2];
 	if (q0Square < 0.0f) // possible in case of numerical integration error
 	{
-		q0Square = 0.0f;
+		q0Square = UTILS_EPS;
 	} 
 	float q0 = sqrt(q0Square);
 
-	return Vector4(q0, qv[0], qv[1], qv[2]);
+	Vector4 q(q0, qv[0], qv[1], qv[2]);
+	q = q / q.norm();
+
+	return q;
 }
 
 Vector4 quatMultiply(const Vector4& q, const Vector4& r)

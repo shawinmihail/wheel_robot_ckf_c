@@ -77,7 +77,15 @@ wz_est = 0;
 
 figure
 hold on
-plot(qz_mes, 'r')
 plot(qz_est, 'b')
-plot(qz_act, 'k')
+plot(qz_act, 'r')
+
+figure
+hold on
+plot(x_mes, 'y')
+plot(x_est, 'b')
+plot(x_act, 'r')
+
+
+% plot(vx_act, 'k')
 
