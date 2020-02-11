@@ -33,12 +33,12 @@ void MeasurmentModel::setData(const Vector15& fullState /* r v a qv w*/)
 
 	// imu in body frame
 	float gz = -10.0f;
-	Vector3 a(fullState[6], fullState[7], fullState[8]);
+	Vector3 a(fullState[6], fullState[7], fullState[8] - gz);
 	Vector4 quatDual = quatInverse(q);
 	Vector3 aB = quatRotate(quatDual, a);
 	_mesState[6] = aB[0] + _imuAccDist(_generator);
 	_mesState[7] = aB[1] + _imuAccDist(_generator);
-	_mesState[8] = aB[2] + _imuAccDist(_generator) - gz;
+	_mesState[8] = aB[2] + _imuAccDist(_generator);
 
 	// suppose rot rate the same in I and B frames (only Z rotation)
 	Vector3 w(3, 1);

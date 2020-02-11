@@ -67,7 +67,7 @@ void main()
 
         // moution
         wheelRobotModel.integrateMoution(ctrl, dt);
-        Vector6 state = wheelRobotModel.getState();
+        //Vector6 state = wheelRobotModel.getState();
         Vector15 actState = wheelRobotModel.getFullState();
 
         // mesuarments
