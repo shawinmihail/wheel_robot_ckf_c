@@ -10,37 +10,14 @@
 #include "MeasurmentModel.h"
 #include "Ckf.h"
 
+#include "parse.h"
+
 #include <Eigen/Dense>
 
 void main()
 {
-    /*Vector4 q1(1, 0, 0, 100);
-    Vector4 q2(-5, 0, 0, 100);
-    q1 = q1 / q1.norm();
-    q2 = q2 / q2.norm();
-    std::cout << q1 << "\n\n";
-    std::cout << q2 << "\n\n";
-    Eigen::Matrix<float, 4, 2> Q;
-    Q << q1, q2;
-    Eigen::Matrix<float, 4, 4> QQT = Q * Q.transpose();
-    Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 4, 4>> solver(QQT);
-    Vector4 eigenvalues = solver.eigenvalues();
-    
-    int k = 0;
-    for (int i = 1; i < 4; i++)
-    {
-        if (eigenvalues[i] > eigenvalues[k])
-        {
-            k = i;
-        }
-    }
-    Vector4 qAvg = solver.eigenvectors().col(k);
-
-    std::cout << qAvg << "\n\n";
-    std::cout << qAvg.norm() << "\n\n";
-
-    return;*/
-
+    parseCsv();
+    return;
     // logging init
     std::ofstream act_state_log;
     act_state_log.open("act_state_log.csv");
